@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html ng-app="app" xml:lang="en" lang="en">
+<head>
+  <title>Dark | Forum</title>
+  <meta http-equiv="content-language" content="en-us" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="author" content="Milan Stankovic" />
+  <meta name="description" content="Projekat iz web programiranja" />
+  <meta name="keywords" content="Forum" />
+
+
+ 
+  <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-route.js"></script>
+  <script src="js/angular-ui-router.js"></script>
+  <script src="js/angular-resource.js"></script>
+  <script src="js/checklist-model.js"></script>
+  <script src="js/angular-jwt.js"></script>
+  <script src="js/ngStorage.js"></script>
+  <script src="../index.js"></script>
+ 	<script src="js/fileModel.js"></script>
+  	<script src="js/multipartForm.js"></script>
+ 	 <script src="js/submitController.js"></script>
+ 	<script src="subForumiService.js"></script>
+	
+  <script src="util/authentication.js"></script>
+    <script src="js/loginCtrl.js"></script>
+<script src="js/subForumCtrl.js"></script>
+    <script src="js/themeCtrl.js"></script>
+    	<script src="js/commentCtrl.js"></script>
+
+  <link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
+  <!--[if lt ie 7]><link rel="stylesheet" type="text/css" media="screen" href="ie-win.css" /><![endif]-->
+</head>
+<body   id="babout">
+  <div ng-controller="loginCtrl" id="header">
+    <h1>Dark | Forum</h1>
+    <div   class="login">
+    
+    <div ng-show="logedIn"> <a href="" ng-click="logout()"> Logout</a> </div>
+    
+      <div ng-hide="logedIn">
+        <form role="form">
+
+         <div >
+           <div  class="form-group">
+             <label for="username">Username :</label>
+             <input type="text" ng-model="korisnickoIme" class="form-control" id="username"> </input>
+           </div>
+           <div class="form-group">
+             <label for="password">Password : </label>
+             <input type="password" ng-model="lozinka" class="form-control" id="password"> </input>
+           </div>
+           <div >
+             <button class="button" type="submit" class="btn btn-primary" ng-click="login(korisnickoIme, lozinka)">Login</button>
+             <a href="/forum161/rest/services/register">Not registered ? </a>
+           </div>
+
+         </div>
+       </form>
+     </div>
+   </div>
+
+<div id="navigation">
+  <ul>
+    <li id="lhome"><a href="/forum161/start/">Home</a></li>
+    <li ng-if="user.username" ><a href="/forum161/start/profile.html">Profile</a></li>
+    <li id="labout"><a href="/forum161/start/contact.html">Contact Me</a></li>
+  </ul>
+   </div>
+
+ </div>
+<div id="wrapper">
+  <div id="content-wrapper">
+    <div ng-controller="themeCtrl" id="content">
+    
+    
+      <div ng-show="theme.edit">  
+    
+     <h2 class="title" id="header"> <a  href="/forum161/start/"> <img src="images/home2.png" width="20" height="20" alt="submit" />  Forum </a> >> <a  href="" ng-click="goBackToSubForum()"  >{{subForum.name}} </a> >> {{theme.title}}
+  
+       
+ 
+      
+		
+      
+      
+
+			<div ng-if="user.username">
+			
+				<div ng-if="user.role === 'ADMIN' || isCurrentMod || user.username === theme.autor.username ">
+				<button style="float: right;"  ng-if="user.role === 'ADMIN' || user.username === subForum.mainModerator.username" type="submit" class="btn btn-primary"  ng-confirm-click="Are you sure to delete this Theme ?" confirmed-click="removeCurrentTheme()" >
+					<img src="images/del.png" width="15" height="15" title="Delete" alt="submit" />
+				</button>
+	  		
+	  		
+	  			<button style="float: right;" type="submit" ng-click="editTheme()" >
+						<img src="images/edit.png" width="15" height="15" title="Edit" alt="submit" />
+					</button>
+				</div>
+				
+				<button type="submit" ng-click="flagActivateCurrentTheme()" style="float: right;">
+					<img src="images/flag.png" width="15" height="15" title="Flag" alt="submit" />
+				</button>
+				
+				
+					<button type="submit" ng-click="followTheme(theme)" style="float: right;">
+						<img src="images/follow2.png" width="15" height="15" title="Follow" alt="submit" />
+					</button>
+				</div>
+     
+      
+
+	  	</h2>
+
+
+	  		</br>
+	  	<dl>
+	  		</br>
+	  	
+	 		<dt>Content : </dt>  
+		    <dd>
+		    	<div  ng-if="theme.type =='TEXT'">
+					 {{theme.content}} 
+				</div>
+				
+				<div  ng-if="theme.type =='LINK'">
+					 <a target="_blank" ng-href="//{{theme.content}}"> {{theme.content}} </a> 
+				</div>
+		    
+		    </dd>
+		    <dt>By :  {{theme.author.username}}</dt> 
+		    <dt>Created : {{theme.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma"}}</dt>
+		    <dd></dd>
+		   
+		    <a  href=""  ng-click="likeTheme(theme)" >Likes : {{theme.likes}}  </a>  <a ng-click="dislikeTheme(theme)" href="" class="dislike"> Dislikes : {{theme.dislikes}} </a>
+			
+		
+			   	<div ng-if="theme.flag">
+			<dt>Flag reason : </dt> 
+		        <dd> <textarea rows="4" cols="80" ng-model="flagTextTT" class="form-control" > </textarea> </dd>
+		         <dd class="last"> <button type="submit" class="btn btn-primary" ng-click="flagTheme(theme,flagTextTT)"> Send </button> </dd>
+			</div>
+	   	
+		
+	   	</dl>
+
+	   	
+	         </div> 
+	        <div ng-hide="theme.edit">  
+	         
+	         <dt>Title : 
+				<input type="text" ng-model="theme.title" class="form-control" >
+			
+			</dt>
+			<div ng-if="user.username">
+			
+				<div ng-if="user.role === 'ADMIN' || isCurrentMod || user.username === theme.autor.username ">
+				<button style="float: right;"  ng-if="user.role === 'ADMIN' || user.username === subForum.mainModerator.username" type="submit" class="btn btn-primary"  ng-confirm-click="Are you sure to delete this Theme ?" confirmed-click="removeCurrentTheme()" >
+					<img src="images/del.png" width="15" height="15" title="Delete" alt="submit" />
+				</button>
+	  		
+	  		
+	  			<button style="float: right;" type="submit" ng-click="editTheme()" >
+						<img src="images/edit.png" width="15" height="15" title="Edit" alt="submit" />
+					</button>
+				</div>
+				
+				
+				
+				
+					<button type="submit" ng-click="followTheme(theme)" style="float: right;">
+						<img src="images/follow2.png" width="15" height="15" title="Follow" alt="submit" />
+					</button>
+				</div>
+	         
+	         
+	         <dd class="title" class="last" > Type : <select ng-model="theme.type" ng-options="item for item in themeTypes"></select>
+		   
+    	
+		       
+			<div ng-if="theme.type =='TEXT' || theme.type == 'LINK'"> Content : </br>
+		        <textarea rows="4" cols="80" ng-model="theme.content" class="form-control"> </textarea>  
+		    </div>
+		    
+		    <button  type="submit" class="btn btn-primary" ng-click="saveEdit(theme)"> Save </button> 
+		    
+		    </dd>
+		    </div>
+	         
+      
+
+  		
+  		
+  		
+         <h3>Comments : </h3>
+        
+         <div ng-if="user.username">
+         	 <p>Add a public  comment : </p>
+         	 <textarea rows="4" cols="80" ng-model="newCommentText" class="form-control" id="editThemeContent"> </textarea>
+         	 </br>
+         	 <button type="submit" ng-click="addComment(newCommentText)">Reply</button>
+         </div>
+         
+    
+    <div ng-app="app" ng-controller='AppCtrl'>
+   	 <script type="text/ng-template" id="commentTree">
+   		
+	
+	<div  ng-if="comment.status != 'OBRISAN'" ng-show="comment.edit">
+        <dt ng-if="comment.status=== 'AKTIVAN'"  >{{comment.author.username}}</dt>
+
+		<div ng-if="user" >
+				<div ng-if="user.role === 'ADMIN' || isCurrentMod || user.username === comment.autor.username ">
+				
+					<button style="float: right;" type="submit" class="btn btn-primary"  ng-confirm-click="Are you sure you want to delete this Comment ?" confirmed-click="removeComment(comment)" >
+						<img src="images/del.png" width="15" height="15" title="Delete" alt="submit" />
+					</button>
+					
+					<button style="float: right;" type="submit" ng-click="editComment(comment)" >
+						<img src="images/edit.png" width="15" height="15" title="Edit" alt="submit" />
+					</button>
+					
+					<button style="float: right;" type="submit" ng-click="logicalDeleteComment(comment)" >
+						<img src="images/hidden2.png" width="15" height="15" title="Logical delete" alt="submit" />
+					</button>
+
+				</div>
+
+				<button type="submit" ng-click="flagActivateComment(comment)" style="float: right;">
+					<img src="images/flag.png" width="15" height="15" title="Flag" alt="submit" />
+				</button>
+				
+				
+					<button type="submit" ng-click="followComment(comment)" style="float: right;">
+						<img src="images/follow2.png" width="15" height="15" title="Follow" alt="submit" />
+					</button>
+		</div>
+
+
+        </br>
+
+
+		
+        <dd ng-if="comment.status=== 'AKTIVAN' " >{{comment.text}}</dd>
+
+		
+       
+		 <dd class="last">	
+		
+				<img ng-if="comment.changed" src="images/edit3.png" width="15" height="15" alt="submit" />	
+			
+
+	
+			Created : {{comment.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma" }} </br> </br> </dd>
+		
+
+        <a ng-if="user.username"  href="" ng-click="startReply(comment)">Reply</a>
+         
+        <a    href=""  class="dislike" ng-click="likeComment(comment)" > Likes : {{comment.likes}}  </a>  <a ng-click="dislikeComment(comment)" href="" class="dislike"> Dislikes : {{comment.dislikes}} </a>
+		</br>
+		</br>
+		
+	 	<div ng-if="comment.comments.length > 0" ng-hide="comment.viewAll">
+			<a     href="" ng-click="viewReplys(comment)" > View all replies ↓ </a>       
+		</div>
+
+		<div ng-if="comment.comments.length > 0" ng-show="comment.viewAll">
+			<a     href="" ng-click="hideReplys(comment)" > Hide all replies ↑ </a>       
+		</div>
+		
+		   	<div ng-if="comment.flag">
+			<dt>Flag reason : </dt> 
+		        <dd> <textarea rows="4" cols="80" ng-model="flagTextC" class="form-control" > </textarea> </dd>
+		         <dd class="last"> <button type="submit" class="btn btn-primary" ng-click="flagComment(comment,flagTextC)"> Send </button> </dd>
+			</div>
+	   	
+
+        <div ng-show="comment.reply">
+        </br>
+         	 <p>Add a public  comment : </p>
+         	 <textarea rows="4" cols="80" ng-model="replyText" class="form-control" > </textarea>
+         	 </br>
+         	 <button type="submit" ng-click="addCommentToComment(replyText, comment)">Reply</button>
+         </div>
+        
+        </br>
+         </br>
+   
+        
+       	<div ng-if="$last">
+              <dd class="last"></dd>
+        </div>
+		<div ng-show="comment.viewAll"> 
+        <ul ng-if="comment.comments">
+            <li ng-repeat="comment in comment.comments track by $index" ng-include="'commentTree'">           
+            </li>
+        </ul>
+		</div>
+	</div>	
+	
+	<div ng-hide="comment.edit">
+		<dd>
+		
+		<div ng-if="user" >
+				<div ng-if="user.role === 'ADMIN' || isCurrentMod || user.username === comment.autor.username ">
+				
+					<button style="float: right;" type="submit" class="btn btn-primary"  ng-confirm-click="Are you sure you want to delete this Comment ?" confirmed-click="removeComment(comment)" >
+						<img src="images/del.png" width="15" height="15" title="Delete" alt="submit" />
+					</button>
+					
+					<button style="float: right;" type="submit" ng-click="editComment(comment)" >
+						<img src="images/edit.png" width="15" height="15" title="Edit" alt="submit" />
+					</button>
+					
+					<button style="float: right;" type="submit" ng-click="logicalDeleteComment(comment)" >
+						<img src="images/hidden2.png" width="15" height="15" title="Logical delete" alt="submit" />
+					</button>
+
+				</div>
+					
+					<button type="submit" ng-click="followComment(comment)" style="float: right;">
+						<img src="images/follow2.png" width="15" height="15" title="Follow" alt="submit" />
+					</button>
+		</div>
+
+			Text : </br>
+
+			<textarea rows="4" cols="80" ng-model="comment.text" class="form-control"> </textarea>
+			</br>   
+			<button  type="submit" class="btn btn-primary" ng-click="saveEditComment(comment)"> Save </button> 
+		</dd>
+
+	</div>
+	
+    	</script>
+    	<ul>
+        <li ng-repeat="comment in comments track by $index" ng-include="'commentTree'"></li>
+  	  </ul>    
+	</div>
+  
+         
+        
+       
+        
+        </div>
+      </div>
+    </div>
+ 
+  
+
+     <div id="footer">
+      <p>Copyright &copy; 2017 &ndash; 2018 RA161/2014. All rights reserved. </p>
+      <p> Design by Milan Stankovic</a>. 
+       
+        <p> <a href="#">Terms of Service</a> | <a href="#">Privacy</a> | <a href="#">Contact</a> | <a href="#">About</a> </p>
+      </div>
+    </body>
+    </html>

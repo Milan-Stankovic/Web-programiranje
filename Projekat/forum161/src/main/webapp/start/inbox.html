@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" lang="en">
+<head>
+<title>Inbox</title>
+<meta http-equiv="content-language" content="en-us" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Milan Stankovic" />
+<meta name="description" content="Projekat iz web programiranja" />
+<meta name="keywords" content="Forum" />
+   <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-route.js"></script>
+  <script src="js/angular-ui-router.js"></script>
+  <script src="js/angular-resource.js"></script>
+    <script src="js/angular-sanitize.js"></script>
+  <script src="js/checklist-model.js"></script>
+  <script src="js/angular-jwt.js"></script>
+  <script src="js/ngStorage.js"></script>
+  <script src="../index.js"></script>
+
+ 	<script src="js/fileModel.js"></script>
+  	<script src="js/multipartForm.js"></script>
+ 	 <script src="js/submitController.js"></script>
+ 	<script src="subForumiService.js"></script>
+
+  <script src="util/authentication.js"></script>
+    <script src="js/loginCtrl.js"></script>
+      <script src="js/inboxCtrl.js"></script>
+    
+
+
+<link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
+<!--[if lt ie 7]><link rel="stylesheet" type="text/css" media="screen" href="ie-win.css" /><![endif]-->
+</head>
+<body  ng-app="app" id="babout">
+<body   id="babout">
+  <div ng-controller="loginCtrl" id="header">
+    <h1>Dark | Forum</h1>
+    <div   class="login">
+    
+    <div ng-show="logedIn"> <a href="" ng-click="logout()"> Logout</a> </div>
+    
+      <div ng-hide="logedIn">
+        <form role="form">
+
+         <div >
+           <div  class="form-group">
+             <label for="username">Username :</label>
+             <input type="text" ng-model="korisnickoIme" class="form-control" id="username"> </input>
+           </div>
+           <div class="form-group">
+             <label for="password">Password : </label>
+             <input type="password" ng-model="lozinka" class="form-control" id="password"> </input>
+           </div>
+           <div >
+             <button class="button" type="submit" class="btn btn-primary" ng-click="login(korisnickoIme, lozinka)">Login</button>
+             <a href="/forum161/rest/services/register">Not registered ? </a>
+           </div>
+
+         </div>
+       </form>
+     </div>
+   </div>
+<div id="navigation">
+  <ul>
+    <li id="lhome"><a href="/forum161/start/">Home</a></li>
+    <li ng-if="user.username" ><a href="/forum161/start/profile.html">Profile</a></li>
+    <li id="labout"><a href="/forum161/start/contact.html">Contact Me</a></li>
+  </ul>
+   </div>
+<div id="wrapper">
+  <div ng-controller="inboxCtrl" id="content-wrapper">
+    <div ng-if="user.username" id="content">
+    
+
+     
+      <h2 ng-if="inbox"  class="profileName"> <center> INBOX  </center> </h2>
+       <h2 ng-if="!inbox"  class="profileName"> <center> FOLLOWED  </center> </h2>
+
+      
+    <div id="navigation">
+  <ul ng-if="inbox">
+    <li><a href="" ng-click="viewUnreadMessages()">Unread</a></li>
+    <li><a href="" ng-click="viewReceivedMessages()">Received</a></li>
+    <li><a href="" ng-click="viewSentMessages()">Sent</a></li>
+    <li><a href="" ng-click="viewNewMessage()">New message</a></li>
+    <li ng-if="user.role == 'ADMIN' || user.role=='MODERATOR' " ><a href="" ng-click="viewFlaggedMessages()">Flag</a></li>
+  </ul>
+</div>
+  
+      
+  <div id="vertical_menu">
+  <a href="/forum161/start/inbox.html?Type=Message" > Messages</a>
+  <a href="/forum161/start/inbox.html?Type=SubForum" >Followed SubForums</a>
+  <a href="/forum161/start/inbox.html?Type=Theme" ">Followed Themes</a>
+  <a href="/forum161/start/inbox.html?Type=Comment" >Followed Comments</a>
+     <a href="/forum161/start/inbox.html?Type=Review" >Reviews</a>
+
+  
+
+  </div>
+  
+  <div class="profileList">
+  
+  	
+  	<div ng-if="inbox">
+  	
+  	<div ng-show="unreadTab">
+  	<div ng-repeat="message in messages track by $index">
+  	
+  	 <div ng-if="message.receiverID == user.username"  class="messages">
+  	 <div ng-if="!message.isFlag">
+  	 <div  ng-if="!message.read">
+   	 <dt> <font size="3">  <a href="" ng-click="readMessage(message)"> From : {{message.senderID}} </a> </font></dt>
+   	 <div ng-show="message.read">
+  	 	<dt> <font size="3">  To  : {{message.reciverID}} </font></dt>
+  		 </br>
+     	<dd class="last">  <font size="3"> {{message.content}} </font> </dd>
+     	</br>
+     	 <textarea rows="4" cols="80" ng-model="replyMessageText2" class="form-control" > </textarea>
+     	 <button type="submit" ng-click="replyToMessage(replyMessageText2, message)">Reply</button>
+  	 </div>
+  		 <div class="profileName"></div>
+  		 </div>
+ 		</div>
+ 	 </div>
+  	</div>
+  	</div>
+  	
+  	
+  	
+  	<div ng-show="receivedTab">
+  	  	<div ng-repeat="message in messages track by $index">
+  		 <div ng-if="!message.isFlag">
+  	 <div ng-if="message.receiverID == user.username"  class="messages">
+   	 <dt ng-if="!message.read"> <font size="3">   <a href="" ng-click="readMessage(message)">  From : {{message.senderID}} </a> </font></dt>
+   	   	 <dt ng-if="message.read"> <font size="3">   <a href="" ng-click="readMessage(message)">  From : {{message.senderID}} </a> </font></dt>
+   
+   	 <div ng-if="message.read">
+  	 	<dt> <font size="3">  To  : {{message.receiverID}} </font></dt>
+  		 </br>
+     	<dd class="last">  <font size="3"> {{message.content}} </font> </dd>
+     	
+     	</br>
+     	 <textarea rows="4" cols="80" ng-model="replyMessageText" class="form-control" > </textarea>
+     	 </br>
+     	 <button type="submit" ng-click="replyToMessage(replyMessageText, message)">Reply</button>
+     	
+  	 </div>
+  	 </div>
+  		 <div class="profileName"></div>
+ 	 </div>
+  	</div>
+  	</div>
+  	
+  	
+  	<div ng-show="flagedTab">
+  	  	<div ng-repeat="message in messages track by $index"  ng-bind-html-unsafe="message.content">
+  	<div ng-if="!message.read">
+  	 <div ng-if="message.isFlag"  class="messages">
+   	 <dt> <font size="3"> From : {{message.senderID}} </font></dt>
+   	
+  	 	<dt> <font size="3">  To  : {{message.receiverID}} </font></dt>
+  		 </br>
+  		 
+  		 <div  ng-bind-html-unsafe="message.content"></div>
+  		 </br>
+     	<dt>   <font size="3">  <pre>{{message.content}}</pre> </font>  </d>
+  	 	</br>
+  	 	<dd  class="last"> <a  ng-href="{{message.link}}">  <font size="3"> Link </font> </a></dd>
+  	 	
+  	 	
+  	 	
+  	 	
+  	 	<form name="myForm" >
+  			<label>
+   		 <input type="radio" ng-model="option.name" value="Delete">
+    		Delete the flagged part
+		  </label><br/>
+ 		 <label>
+    	<input type="radio" ng-model="option.name" value="Warn">
+   		 Warn the creator
+  		</label><br/>
+  		<label>
+    	<input type="radio" ng-model="option.name" value="Reject">
+    	Reject the flag
+  		</label><br/>
+ 		</form>
+  	 	</br>
+     	 <button type="submit" ng-click="replyToFlag(message, option.name)">Solve</button>
+     	
+  	 	
+  	 	</div>
+  	 	
+  	 </div>
+  		 <div class="profileName"></div>
+ 
+  	</div>
+  	</div>
+  	
+  	
+  	
+  	<div ng-show="sentTab">
+  	  	<div ng-repeat="message in messages track by $index">
+  	
+  	 <div ng-if="message.senderID == user.username"  class="messages">
+   	 <dt> <font size="3">  <a href="" ng-click="readMessage(message)"> From : {{message.senderID}} </a> </font></dt>
+  	 	<dt> <font size="3">  To  : {{message.receiverID}} </font></dt>
+  		 </br>
+     	<dd class="last">  <font size="3"> {{message.content}} </font> </dd>
+ 		</br>
+ 		<p ng-if="message.read"><i> Seen </i> </p>
+  		 <div class="profileName"></div>
+ 	 </div>
+  	</div>
+  	</div>
+  	
+  	
+  	<div ng-show="newMessage">
+  	  	
+  		 <label >To :</label>
+  	 	 <textarea class="reciver" type="text" rows="1" cols="60" ng-model="newReciver" class="form-control"> </textarea>
+  	 	 </br>
+  	 	 </br>
+     	 <textarea rows="4" cols="80" ng-model="newMessageText" class="form-control" > </textarea>
+     	  </br>
+     	 <button type="submit" ng-click="sendNewMessage(newMessageText, newReciver)">Send</button>
+     	
+  	
+  	
+  	</div>
+  	
+ 
+ 
+ </div>
+ 
+ 
+ 	<div ng-if="showThemes">
+ 	
+ 		 <div  ng-repeat="theme in user.followedThemes track by $index">
+			<dt  >
+				<a  href="" ng-click="goToTheme(theme)"  >{{theme.title}} </a>
+
+			</dt>
+			
+			<div >
+				<dd> 
+					<div  ng-if="theme.type =='TEXT'">
+					 Content : {{theme.content}} 
+				</div>
+				
+				<div  ng-if="theme.type =='LINK'">
+					Content : <a target="_blank" ng-href="//{{theme.content}}"> {{theme.content}} </a> 
+				</div>
+				
+					 <br />
+					 By : {{theme.author.username}}  
+					 <br/>
+					 Created : {{theme.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma"}}
+			 	<br/>  <a  >Likes : {{theme.likes}}  </a>  <a   class="dislike"> Dislikes : {{theme.dislikes}} </a>
+			</dd>
+			
+			</div>
+		
+		</div>
+ 	
+ 		
+ 	
+ 	
+ 	</div>
+ 	
+ 	<div ng-if="showSubForums">
+ 		<div ng-repeat="subForum in user.followedForums track by $index">
+
+			 <dt  >
+				<a href="" ng-click="goToSubForum(subForum)" >{{subForum.name}} </a>
+			</dt>
+
+			<div ng-if="!$last"> 
+				<dd> Description : {{subForum.description}}  <br/> Rules : {{subForum.rules}} </br> By : {{subForum.mainModerator.username}} </dd>
+			</div>
+			
+			<div ng-if="$last"> 
+				<dd class="last"> Description : {{subForum.description}}  <br/>  Rules : {{subForum.rules}} </br> By : {{subForum.mainModerator.username}} </dd>
+			</div>
+			
+			
+		</div>
+		
+ 	</div>
+ 	
+ 	
+ 	<div ng-if="showComments">
+ 		<div ng-repeat="comment in user.followedComments track by $index">
+ 		
+ 			<dt >{{comment.author.username}}</dt>
+        	<dd class="last">{{comment.text}} </br>
+ 			
+			Created : {{comment.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma" }} </br>  </dd>
+			 <a> Likes : {{comment.likes}} </a> <a class="dislike">  Dislikes : {{comment.dislikes}} </a>
+		<dd >	</dd>
+ 		 
+			
+			 
+ 		</div>
+ 	
+ 	
+ 	</div>
+ 	
+ 	
+ 	
+ 	<div ng-if="Review">
+ 	<div ng-if="reviewThemesLiked || reviewThemesDisliked">
+ 	<h3><center>Themes : </center> </h3>
+ 		
+ 		<div ng-if="reviewThemesLiked">
+ 			<h4>Liked</h4>
+ 			
+ 			<div  ng-repeat="theme in reviewThemesLiked track by $index">
+			<dt  >
+				<a  href="" ng-click="goToTheme(theme)"  >{{theme.title}} </a>
+
+			</dt>
+			
+			<div >
+				<dd> 
+					<div  ng-if="theme.type =='TEXT'">
+					 Content : {{theme.content}} 
+				</div>
+				
+				<div  ng-if="theme.type =='LINK'">
+					Content : <a target="_blank" ng-href="//{{theme.content}}"> {{theme.content}} </a> 
+				</div>
+					 <br />
+					 By : {{theme.author.username}}  
+					 <br/>
+					 Created : {{theme.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma"}}
+			 	<br/>  <a  >Likes : {{theme.likes}}  </a>  <a   class="dislike"> Dislikes : {{theme.dislikes}} </a>
+			</dd>
+			
+			</div>
+		
+		</div>
+ 			
+ 			
+ 		</div>
+ 		
+ 		<div ng-if="reviewThemesDisliked">
+ 			<h4>Disliked</h4>
+ 			
+ 			
+ 			<div  ng-repeat="theme in reviewThemesDisliked track by $index">
+			<dt  >
+				<a  href="" ng-click="goToTheme(theme)"  >{{theme.title}} </a>
+
+			</dt>
+			
+			<div >
+				<dd> 
+					<div  ng-if="theme.type =='TEXT'">
+					 Content : {{theme.content}} 
+				</div>
+				
+				<div  ng-if="theme.type =='LINK'">
+					Content : <a target="_blank" ng-href="//{{theme.content}}"> {{theme.content}} </a> 
+				</div>
+					 <br />
+					 By : {{theme.author.username}}  
+					 <br/>
+					 Created : {{theme.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma"}}
+			 	<br/>  <a  >Likes : {{theme.likes}}  </a>  <a   class="dislike"> Dislikes : {{theme.dislikes}} </a>
+			</dd>
+			
+			</div>
+		
+		</div>
+ 			
+
+ 		</div>
+ 	</div>
+ 		
+ 		
+	 <div ng-if="reviewCommentsLiked || reviewCommentsLiked">
+ 		<h3><center>Comments : </center> </h3>
+ 		
+ 		<div ng-if="reviewCommentsLiked">
+ 			<h4>Liked</h4>
+ 			
+ 			<div ng-repeat="comment in reviewCommentsLiked track by $index">
+ 		
+ 			<dt >{{comment.author.username}}</dt>
+        	<dd class="last">{{comment.text}} </br>
+ 			
+			Created : {{comment.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma" }} </br>  </dd>
+			 <a> Likes : {{comment.likes}} </a> <a class="dislike">  Dislikes : {{comment.dislikes}} </a>
+		<dd >	</dd>
+
+ 		</div>
+ 			
+ 			
+ 		</div>
+ 		
+ 		<div ng-if="reviewCommentsDisliked">
+ 			<h4>Disliked</h4>
+ 			
+ 				
+ 			<div ng-repeat="comment in reviewCommentsDisliked track by $index">
+ 		
+ 			<dt >{{comment.author.username}}</dt>
+        	<dd class="last">{{comment.text}} </br>
+ 			
+			Created : {{comment.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma" }} </br>  </dd>
+			 <a> Likes : {{comment.likes}} </a> <a class="dislike">  Dislikes : {{comment.dislikes}} </a>
+		<dd >	</dd>
+
+ 		</div>
+ 			
+ 		</div>
+ 	</div>
+ 		
+ 		
+ 		
+ 	
+ 	
+ 	</div>
+ 	
+ 	
+ 	
+ 
+ 
+ 
+  </div>
+     
+     
+     
+
+     
+     
+    
+    </div>
+  </div>
+ </div>
+  
+ <div id="footer">
+      <p>Copyright &copy; 2017 &ndash; 2018 RA161/2014. All rights reserved. </p>
+      <p> Design by Milan Stankovic</a>. 
+       
+        <p> <a href="#">Terms of Service</a> | <a href="#">Privacy</a> | <a href="#">Contact</a> | <a href="#">About</a> </p>
+      </div>
+</body>
+</html>

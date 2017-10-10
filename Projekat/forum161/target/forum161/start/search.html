@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" lang="en">
+<head>
+<title>Inbox</title>
+<meta http-equiv="content-language" content="en-us" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Milan Stankovic" />
+<meta name="description" content="Projekat iz web programiranja" />
+<meta name="keywords" content="Forum" />
+   <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-route.js"></script>
+  <script src="js/angular-ui-router.js"></script>
+  <script src="js/angular-resource.js"></script>
+    <script src="js/angular-sanitize.js"></script>
+  <script src="js/checklist-model.js"></script>
+  <script src="js/angular-jwt.js"></script>
+  <script src="js/ngStorage.js"></script>
+  <script src="../index.js"></script>
+
+ 	<script src="js/fileModel.js"></script>
+  	<script src="js/multipartForm.js"></script>
+ 	 <script src="js/submitController.js"></script>
+ 	<script src="subForumiService.js"></script>
+
+  <script src="util/authentication.js"></script>
+    <script src="js/loginCtrl.js"></script>
+      <script src="js/searchCtrl.js"></script>
+    
+
+
+<link rel="start" title="Home" href="http://www.sixpence.com/" />
+<link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
+<!--[if lt ie 7]><link rel="stylesheet" type="text/css" media="screen" href="ie-win.css" /><![endif]-->
+</head>
+<body  ng-app="app" id="babout">
+<body   id="babout">
+  <div ng-controller="loginCtrl" id="header">
+    <h1>Dark | Forum</h1>
+    <div   class="login">
+    
+    <div ng-show="logedIn"> <a href="" ng-click="logout()"> Logout</a> </div>
+    
+      <div ng-hide="logedIn">
+        <form role="form">
+
+         <div >
+           <div  class="form-group">
+             <label for="username">Username :</label>
+             <input type="text" ng-model="korisnickoIme" class="form-control" id="username"> </input>
+           </div>
+           <div class="form-group">
+             <label for="password">Password : </label>
+             <input type="password" ng-model="lozinka" class="form-control" id="password"> </input>
+           </div>
+           <div >
+             <button class="button" type="submit" class="btn btn-primary" ng-click="login(korisnickoIme, lozinka)">Login</button>
+             <a href="/forum161/rest/services/register">Not registered ? </a>
+           </div>
+
+         </div>
+       </form>
+     </div>
+   </div>
+<div id="navigation">
+  <ul>
+    <li id="lhome"><a href="/forum161/start/">Home</a></li>
+    <li ng-if="user.username" ><a href="/forum161/start/profile.html">Profile</a></li>
+    <li id="labout"><a href="/forum161/start/contact.html">Contact Me</a></li>
+  </ul>
+   </div>
+<div id="wrapper">
+  <div ng-controller="searchCtrl" id="content-wrapper">
+    <div id="content">
+    
+
+  
+
+  
+ 	<h3><center>Themes : </center> </h3>
+
+ 			<div class="search" ng-repeat="theme in searchResult.themes track by $index">
+			<dt  >
+				<a  href="" ng-click="goToTheme(theme)"  >{{theme.title}} </a>
+
+			</dt>
+			
+			<div >
+				<dd> 
+					<div  ng-if="theme.type =='TEXT'">
+					 Content : {{theme.content}} 
+				</div>
+				
+				<div  ng-if="theme.type =='LINK'">
+					Content : <a target="_blank" ng-href="//{{theme.content}}"> {{theme.content}} </a> 
+				</div>
+					 <br />
+					 By : {{theme.author.username}}  
+					 <br/>
+					 Created : {{theme.dateOfCreation | date:"dd/MM/yyyy 'at' h:mma"}}
+			 	<br/>  <a  >Likes : {{theme.likes}}  </a>  <a   class="dislike"> Dislikes : {{theme.dislikes}} </a>
+			</dd>
+			
+			</div>
+		
+		</div>
+		
+			<h3><center>SubForums : </center> </h3>
+		
+		<div class="search" ng-repeat="subForum in searchResult.subForums track by $index">
+
+			 <dt  >
+				<a href="" ng-click="goToSubForum(subForum)" >{{subForum.name}} </a>
+			</dt>
+
+			<div ng-if="!$last"> 
+				<dd> Description : {{subForum.description}}  <br/> Rules : {{subForum.rules}} </br> By : {{subForum.mainModerator.username}} </dd>
+			</div>
+			
+			<div ng-if="$last"> 
+				<dd class="last"> Description : {{subForum.description}}  <br/>  Rules : {{subForum.rules}} </br> By : {{subForum.mainModerator.username}} </dd>
+			</div>
+			
+			
+		</div>
+		
+		<h3><center>Users : </center> </h3>
+		
+		<div class="search" ng-repeat="user in searchResult.users track by $index">
+		
+		
+			<div ng-if="!$last"> 
+				<dt> Username : {{user.username}}   </dt>
+			</div>
+			
+			<div ng-if="$last"> 
+				<dt> Username : {{user.username}}   </dt>
+			</div>
+		
+		</div>
+		
+		
+		
+		
+
+  </div>
+
+    </div>
+  </div>
+ </div>
+  
+ <div id="footer">
+      <p>Copyright &copy; 2017 &ndash; 2018 RA161/2014. All rights reserved. </p>
+      <p> Design by Milan Stankovic</a>. 
+       
+        <p> <a href="#">Terms of Service</a> | <a href="#">Privacy</a> | <a href="#">Contact</a> | <a href="#">About</a> </p>
+      </div>
+</body>
+</html>

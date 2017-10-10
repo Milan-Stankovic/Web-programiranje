@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" lang="en">
+<head>
+<title>Profile</title>
+<meta http-equiv="content-language" content="en-us" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Milan Stankovic" />
+<meta name="description" content="Projekat iz web programiranja" />
+<meta name="keywords" content="Forum" />
+   <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-route.js"></script>
+  <script src="js/angular-ui-router.js"></script>
+  <script src="js/angular-resource.js"></script>
+  <script src="js/checklist-model.js"></script>
+  <script src="js/angular-jwt.js"></script>
+  <script src="js/ngStorage.js"></script>
+  <script src="../index.js"></script>
+ 	<script src="js/fileModel.js"></script>
+  	<script src="js/multipartForm.js"></script>
+ 	 <script src="js/submitController.js"></script>
+ 	<script src="subForumiService.js"></script>
+
+  <script src="util/authentication.js"></script>
+    <script src="js/loginCtrl.js"></script>
+      <script src="js/profileCtrl.js"></script>
+    
+
+
+<link rel="stylesheet" type="text/css" media="screen" href="screen.css" />
+<!--[if lt ie 7]><link rel="stylesheet" type="text/css" media="screen" href="ie-win.css" /><![endif]-->
+</head>
+<body  ng-app="app" id="babout">
+<body   id="babout">
+  <div ng-controller="loginCtrl" id="header">
+    <h1>Dark | Forum</h1>
+    <div   class="login">
+    
+    <div ng-show="logedIn"> <a href="" ng-click="logout()"> Logout</a> </div>
+    
+      <div ng-hide="logedIn">
+        <form role="form">
+
+         <div >
+           <div  class="form-group">
+             <label for="username">Username :</label>
+             <input type="text" ng-model="korisnickoIme" class="form-control" id="username"> </input>
+           </div>
+           <div class="form-group">
+             <label for="password">Password : </label>
+             <input type="password" ng-model="lozinka" class="form-control" id="password"> </input>
+           </div>
+           <div >
+             <button class="button" type="submit" class="btn btn-primary" ng-click="login(korisnickoIme, lozinka)">Login</button>
+             <a href="/forum161/rest/services/register">Not registered ? </a>
+           </div>
+
+         </div>
+       </form>
+     </div>
+   </div>
+   </div>
+   <div ng-controller="profileCtrl" id="content-wrapper">
+<div id="navigation">
+  <ul>
+    <li id="lhome"><a href="/forum161/start/">Home</a></li>
+    <li ng-if="user.username" ><a href="/forum161/start/profile.html">Profile</a></li>
+    <li id="labout"><a href="/forum161/start/contact.html">Contact Me</a></li>
+  </ul>
+   </div>
+<div id="wrapper">
+  
+    <div ng-if="user.username" id="content">
+    
+
+     
+      <h2 class="profileName"> <center>{{user.username}}  </center> </h2>
+     <button ng-if="user.username" style="float: right;" type="submit" ng-click="editProfile()" >
+						<img src="images/edit.png" width="15" height="15" title="Edit" alt="submit" />
+	  </button>
+      
+      
+  <div id="vertical_menu">
+  <a href="/forum161/start/inbox.html?Type=Message" > Messages</a>
+  <a href="/forum161/start/inbox.html?Type=SubForum" >Followed SubForums</a>
+  <a href="/forum161/start/inbox.html?Type=Theme" ">Followed Themes</a>
+  <a href="/forum161/start/inbox.html?Type=Comment" >Followed Comments</a>
+   <a href="/forum161/start/inbox.html?Type=Review" >Reviews</a>
+  <a href="/forum161/start/inbox.html?Type=Recommended" >Recommended</a>
+   <div ng-if="user.role ==='ADMIN'">
+  	<a href="" ng-click="userControlActivate()">User control</a>
+  </div>
+  
+  </div>
+  
+  
+  <div ng-if="!userControl">
+      <div ng-hide="editActivate" class="profileList">
+        <dt> <font size="4"> Username : {{user.username}} </font> </dt> 
+        <dt> <font size="4"> Password : {{passwordStars}} </font> </dt> 
+        <dt> <font size="4"> First name : {{user.firstName}} </font> </dt> 
+        <dt> <font size="4"> Last name :  {{user.lastName}} </font> </dt> 
+        <dt> <font size="4"> Phone number : {{user.phone}} </font> </dt> 
+        <dt> <font size="4"> E-mail : {{user.email}} </font> </dt> 
+       
+     </div>
+    <div ng-show="editActivate" class="profileList">
+        <dt> <font size="4"> Password : </font>  <input type="password" ng-model="user.password" class="form-control"> </dt> 
+        <dt> <font size="4"> Confirm Password : </font>  <input type="password" ng-model="confirmedPass" class="form-control"> </dt> 
+        <dt> <font size="4"> First name :  </font>  <input type="text" ng-model="user.firstName" class="form-control"> </dt> 
+        <dt> <font size="4"> Last name : </font>  <input type="text" ng-model="user.lastName" class="form-control"> </dt> 
+        <dt> <font size="4"> Phone number : </font>  <input type="text" ng-model="user.phone" class="form-control"> </dt> 
+        <dt> <font size="4"> E-mail :  </font>  <input type="text" ng-model="user.email" class="form-control"> </dt> 
+         <button class="saveProfile" ng-if="user.username" style="float: left;" type="submit" ng-click="saveEditProfile()" >Save </button> <div ng-show="editFail"> You have to confirm your password before you save edits </div>   
+    </div>
+    
+   </div>
+    
+    <div ng-if="userControl">
+     <div class="profileList">
+     
+   
+     	<dt> <font size="4"> Add admin : </font>  
+     		<button  type="submit"  ng-click="addAdminActivate()" >
+				<img src="images/plus.png" width="20" height="20" alt="submit" />
+			</button>
+		</dt> 
+		
+		<div ng-if="addAdmin">
+		</br>
+			<dt> <font size="3"> Admin username : </font>  </dt>
+			<input type="text" ng-model="adminName" class="form-control">
+      		<button class="saveProfile" style="float: left;" type="submit" ng-click="saveAddAdmin(adminName)" >Add </button>
+      	</div>
+			
+        <dt> <font size="4"> Add moderator : </font> 
+        	<button type="submit"  ng-click="addModeratorActivate()" >
+				<img src="images/plus.png" width="20" height="20" alt="submit" />
+			</button>
+		</dt> 
+		
+		 <div ng-if="addModerator">
+      </br>
+      	<dt> <font size="3"> Moderator username : </font>  </dt>
+       	<input type="text" ng-model="modName" class="form-control"> 
+     	<button class="saveProfile" style="float: left;" type="submit" ng-click="saveAddMod(modName)" >Add </button>
+      </div>
+		
+		
+		<dt> <font size="4"> Remove user : </font> 
+        	<button type="submit"  ng-click="removeUserActivate()" >
+				<img src="images/plus.png" width="20" height="20" alt="submit" />
+			</button>
+		</dt> 
+		
+		<div ng-if="removeUser">
+      </br>
+      	<dt> <font size="3"> Account Username : </font>  </dt>
+       	<input type="text" ng-model="removeName" class="form-control"> 
+     	<button class="saveProfile" style="float: left;" type="submit" ng-click="saveRemoveUser(removeName)" > Remove </button>
+      </div>
+		
+		
+		<dt> <font size="4"> Remove title : </font> 
+        	<button type="submit"  ng-click="removeTitleActivate()" >
+				<img src="images/plus.png" width="20" height="20" alt="submit" />
+			</button>
+		</dt> 
+		 <div ng-if="removeTitle">
+      </br>
+      	<dt> <font size="3">  Account Username : </font>  </dt>
+       	<input type="text" ng-model="removeTitleName" class="form-control"> 
+     	<button class="saveProfile" style="float: left;" type="submit" ng-click="saveRemoveTitle(removeTitleName)" >Remove </button>
+      </div>
+		
+     
+     
+     </div>
+    </div>
+    
+    </div>
+  </div>
+ </div>
+  
+ <div id="footer">
+      <p>Copyright &copy; 2017 &ndash; 2018 RA161/2014. All rights reserved. </p>
+      <p> Design by Milan Stankovic</a>. 
+       
+        <p> <a href="#">Terms of Service</a> | <a href="#">Privacy</a> | <a href="#">Contact</a> | <a href="#">About</a> </p>
+      </div>
+</body>
+</html>

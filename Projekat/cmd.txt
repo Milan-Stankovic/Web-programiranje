@@ -1,0 +1,3 @@
+set JAVA_HOME=C:\ "top level directory of your java install"
+set CATALINA_HOME=C:\ "top level directory of your Tomcat install"
+set PATH=%PATH%;%JAVA_HOME%\bin;%CATALINA_HOME%\bin
